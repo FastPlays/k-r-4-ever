@@ -69,12 +69,20 @@ body{
   margin-top:5px;
   font-size:12px;
   opacity:0.5;
-}
-.liked {
-  background: #f0f0ff !important;
-  border-left: 4px solid #ff4d6d;
+.meta{
+  font-size:12px;
+  margin-top:4px;
+  opacity:0.6;
+  display:flex;
+  gap:8px;
 }
 
-.edited {
-  border: 1px dashed rgba(0,0,0,0.2);
+.edited{
+  color:gray;
+  font-style:italic;
+}
+
+.liked{
+  color:#e1306c;
+  font-weight:600;
 }
