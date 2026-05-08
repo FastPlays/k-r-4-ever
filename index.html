@@ -23,56 +23,76 @@ fetch('./message1.html')
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
-
     const messages = doc.querySelectorAll('div.pam');
-
     const chat = document.getElementById('chat');
+
+    const map = new Map();
+
+    function cleanText(text = "") {
+      return text
+        .replace("❤Khloe", "")
+        .replace("❤Rylen", "")
+        .replace("(edited)", "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function isSystemMessage(text = "") {
+      const t = text.toLowerCase();
+      return (
+        t.includes("liked a message") ||
+        t.includes("reacted") ||
+        t.includes("reacted ❤️ to your message")
+      );
+    }
 
     messages.forEach(msg => {
 
       const sender = msg.querySelector('h2')?.innerText?.trim();
       const time = msg.querySelector('div._3-94._a6-o')?.innerText?.trim();
+      const textBlock = msg.querySelector('div._a6-p');
 
       if (!sender || !time) return;
 
-      const textBlock = msg.querySelector('div._a6-p');
-      let text = '';
-      let isLiked = false;
-      let isEdited = false;
+      let rawText = textBlock ? textBlock.innerText.trim() : "";
 
-      if (textBlock) {
-        text = textBlock.innerText.trim();
+      if (isSystemMessage(rawText)) return;
 
-        if (text.toLowerCase().includes('liked a message')) {
-          isLiked = true;
-        }
+      const isEdited = rawText.includes("(edited)");
 
-        if (text.toLowerCase().includes('(edited)')) {
-          isEdited = true;
-          text = text.replace('(edited)', '').trim();
+      const text = cleanText(rawText);
+
+      const key = sender + "|" + time;
+
+      const existing = map.get(key);
+
+      const data = { sender, time, text, isEdited };
+
+      if (!existing) {
+        map.set(key, data);
+      } else {
+        // keep edited version if duplicate exists
+        if (isEdited && !existing.isEdited) {
+          map.set(key, data);
         }
       }
+    });
+
+    map.forEach(({ sender, time, text, isEdited }) => {
 
       const bubble = document.createElement('div');
       bubble.className = sender === 'Rylen' ? 'message you' : 'message her';
 
-      let meta = '';
-
-      if (isEdited) meta += `<span class="edited">edited</span>`;
-      if (isLiked) meta += `<span class="liked">❤ liked</span>`;
-
       bubble.innerHTML = `
         <div class="name">${sender}</div>
-
         ${text ? `<div class="bubble">${text}</div>` : ''}
-
-        ${meta ? `<div class="meta">${meta}</div>` : ''}
-
+        <div class="meta">
+          ${isEdited ? `<span class="edited">edited</span>` : ''}
+        </div>
         <div class="time">${time}</div>
       `;
 
       chat.appendChild(bubble);
-
     });
 
   });
