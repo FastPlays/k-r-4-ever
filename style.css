@@ -71,3 +71,16 @@ body{
   color:#e1306c;
   font-weight:600;
 }
+.search-box{
+  text-align:center;
+  margin:20px;
+}
+
+.search-box input{
+  width:80%;
+  max-width:500px;
+  padding:12px;
+  border-radius:20px;
+  border:1px solid #ccc;
+  outline:none;
+}
