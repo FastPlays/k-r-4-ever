@@ -30,40 +30,31 @@ fetch('./message1.html')
     messages.forEach(msg => {
 
       const senderEl = msg.querySelector('h2');
-      const timeEl = msg.querySelector('div._3-94._a6-o');
-      const textBlocks = msg.querySelectorAll('div._3-95._a6-p div div');
-
-      if (!senderEl || !timeEl) return;
+      if (!senderEl) return;
 
       const sender = senderEl.innerText.trim();
-      const time = timeEl.innerText.trim();
 
-      let text = "";
+      const textEl = msg.querySelector('div._3-95._a6-p');
+      let text = textEl ? textEl.innerText.trim() : '';
 
-      textBlocks.forEach(t => {
-        const val = t.innerText.trim();
+      const timeEl = msg.querySelector('div._3-94._a6-o');
+      const time = timeEl ? timeEl.innerText.trim() : '';
 
-        if (
-          !val ||
-          val.includes("Liked a message") ||
-          val.includes("edited")
-        ) return;
+      const isLiked = text.includes("Liked a message");
+      const isEdited = text.includes("(edited)");
 
-        text += (text ? "\n" : "") + val;
-      });
-
-      if (!text) return;
+      let bubbleText = text
+        .replace("Liked a message", "❤️ liked a message")
+        .replace("(edited)", "✏️ edited");
 
       const bubble = document.createElement('div');
-
-      bubble.className =
-        sender === 'Rylen'
-        ? 'message you'
-        : 'message her';
+      bubble.className = sender === 'Rylen' ? 'message you' : 'message her';
 
       bubble.innerHTML = `
         <div class="name">${sender}</div>
-        <div class="bubble">${text}</div>
+        <div class="bubble ${isLiked ? 'liked' : ''} ${isEdited ? 'edited' : ''}">
+          ${bubbleText}
+        </div>
         <div class="time">${time}</div>
       `;
 
