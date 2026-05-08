@@ -31,7 +31,9 @@ fetch('./message1.html')
     function cleanText(text = "") {
       return text
         .replace("❤Khloe", "")
+        .replace("❤️Khloe", "")
         .replace("❤Rylen", "")
+        .replace("❤️Rylen", "")
         .replace("(edited)", "")
         .replace(/\s+/g, " ")
         .trim();
@@ -39,10 +41,11 @@ fetch('./message1.html')
 
     function isSystemMessage(text = "") {
       const t = text.toLowerCase();
+
       return (
-        t.includes("liked a message") ||
         t.includes("reacted") ||
-        t.includes("reacted ❤️ to your message")
+        t.includes("liked a message") ||
+        t.includes("replied")
       );
     }
 
@@ -52,50 +55,33 @@ fetch('./message1.html')
       const time = msg.querySelector('div._3-94._a6-o')?.innerText?.trim();
       const textBlock = msg.querySelector('div._a6-p');
 
-      if (!sender || !time) return;
+      if (!sender || !time || !textBlock) return;
 
-      let rawText = textBlock ? textBlock.innerText.trim() : "";
+      // get message text
+      let rawText = textBlock.innerText.trim();
 
+      // skip instagram system messages
       if (isSystemMessage(rawText)) return;
 
-      const isEdited = rawText.includes("(edited)");
+      // detect edited messages
+      const isEdited = rawText.includes('(edited)');
+
+      // detect likes/reactions
+      const reactionEl = textBlock.querySelector('ul._a6-q li span');
+      const likedBy = reactionEl
+        ? reactionEl.innerText.replace(/[❤❤️]/g, '').trim()
+        : '';
 
       const text = cleanText(rawText);
 
-      const key = sender + "|" + time;
+      // stronger duplicate key
+      const key = sender + '|' + time;
 
-      const existing = map.get(key);
-
-      const data = { sender, time, text, isEdited };
-
-      if (!existing) {
-        map.set(key, data);
-      } else {
-        // keep edited version if duplicate exists
-        if (isEdited && !existing.isEdited) {
-          map.set(key, data);
-        }
-      }
-    });
-
-    map.forEach(({ sender, time, text, isEdited }) => {
-
-      const bubble = document.createElement('div');
-      bubble.className = sender === 'Rylen' ? 'message you' : 'message her';
-
-      bubble.innerHTML = `
-        <div class="name">${sender}</div>
-        ${text ? `<div class="bubble">${text}</div>` : ''}
-        <div class="meta">
-          ${isEdited ? `<span class="edited">edited</span>` : ''}
-        </div>
-        <div class="time">${time}</div>
-      `;
-
-      chat.appendChild(bubble);
-    });
-
-  });
+      const data = {
+        sender,
+        time,
+        text,
+        isEdited,
 </script>
 </body>
 </html>
