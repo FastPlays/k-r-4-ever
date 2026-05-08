@@ -70,3 +70,11 @@ body{
   font-size:12px;
   opacity:0.5;
 }
+.liked {
+  background: #f0f0ff !important;
+  border-left: 4px solid #ff4d6d;
+}
+
+.edited {
+  border: 1px dashed rgba(0,0,0,0.2);
+}
