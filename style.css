@@ -6,7 +6,7 @@ body{
 
 .top{
   text-align:center;
-  padding:20px;
+  padding:15px;
   background:white;
   position:sticky;
   top:0;
@@ -45,13 +45,13 @@ body{
   max-width:70%;
   padding:12px 15px;
   border-radius:18px;
-  background:white;
+  background:#FF69B4;
   box-shadow:0 2px 6px rgba(0,0,0,0.1);
 }
 
 .you .bubble{
   background:#DC143C;
-  color:pink;
+  color:white;
 }
 
 .meta{
