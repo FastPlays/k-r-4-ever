@@ -27,6 +27,8 @@ fetch('./message1.html')
     const messages = doc.querySelectorAll('div.pam');
     const chat = document.getElementById('chat');
 
+    let lastMessageEl = null;
+
     messages.forEach(msg => {
 
       const sender = msg.querySelector('h2')?.innerText?.trim();
@@ -34,54 +36,52 @@ fetch('./message1.html')
 
       if (!sender || !time) return;
 
+      // clone text block so we can safely remove junk
       const textBlock = msg.querySelector('div._a6-p');
-      let text = textBlock ? textBlock.innerText.trim() : '';
+      let text = '';
 
-      let isEdited = false;
-      let isLiked = false;
+      if (textBlock) {
+        const clone = textBlock.cloneNode(true);
 
-      // detect edited
-      if (text.toLowerCase().includes('(edited)')) {
-        isEdited = true;
+        // remove sender name if it leaks inside text
+        clone.querySelectorAll('h2').forEach(e => e.remove());
+
+        text = clone.innerText.trim();
+      }
+
+      const isEdited = text.includes('(edited)');
+      if (isEdited) {
         text = text.replace('(edited)', '').trim();
       }
 
-      // detect "liked a message"
-      if (text.toLowerCase().includes('liked a message')) {
-        isLiked = true;
-        text = ''; // remove original system message completely
+      const isLiked = text.toLowerCase().includes('liked a message');
+
+      // FIX 1: liked messages become separate UI element ONLY
+      if (isLiked) {
+        if (lastMessageEl) {
+          const like = document.createElement('div');
+          like.className = 'like-below';
+          like.innerText = '❤ liked';
+          lastMessageEl.appendChild(like);
+        }
+        return; // IMPORTANT: do not render a normal bubble
       }
 
+      // build message bubble
       const bubble = document.createElement('div');
       bubble.className = sender === 'Rylen' ? 'message you' : 'message her';
 
-      let meta = '';
-
-      if (isEdited) {
-        meta += `<span class="edited">edited</span>`;
-      }
-
-      // build message
       bubble.innerHTML = `
         <div class="name">${sender}</div>
-
-        ${text ? `<div class="bubble">${text}</div>` : ''}
-
-        ${meta ? `<div class="meta">${meta}</div>` : ''}
-
+        <div class="bubble">${text}</div>
+        ${isEdited ? `<div class="meta">edited</div>` : ''}
         <div class="time">${time}</div>
       `;
 
       chat.appendChild(bubble);
 
-      // FIX 1: liked message becomes a pink indicator BELOW the message
-      if (isLiked) {
-        const like = document.createElement('div');
-        like.className = 'like-below';
-        like.innerText = '❤ liked';
-
-        chat.appendChild(like);
-      }
+      // track last real message
+      lastMessageEl = bubble;
 
     });
 
