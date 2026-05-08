@@ -50,12 +50,13 @@ fetch('./message1.html')
 
       const sender = msg.querySelector('h2')?.innerText?.trim();
       const time = msg.querySelector('div._3-94._a6-o')?.innerText?.trim();
-      const textBlock = msg.querySelector('div._a6-p');
+const textBlock = msg.querySelector('div._a6-p');
+const imageBlock = msg.querySelector('img');
 
       if (!sender || !time) return;
 
       let rawText = textBlock ? textBlock.innerText.trim() : "";
-
+const imageSrc = imageBlock ? imageBlock.getAttribute('src') : null;
       if (isSystemMessage(rawText)) return;
 
       const isEdited = rawText.includes("(edited)");
@@ -77,8 +78,10 @@ fetch('./message1.html')
         }
       }
     });
-
-    map.forEach(({ sender, time, text, isEdited }) => {
+const sortedMessages = [...map.values()].sort((a, b) => {
+  return new Date(a.time) - new Date(b.time);
+});
+sortedMessages.forEach(({ sender, time, text, isEdited }) => {
 
       const bubble = document.createElement('div');
       bubble.className = sender === 'Rylen' ? 'message you' : 'message her';
