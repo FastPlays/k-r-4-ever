@@ -20,26 +20,19 @@
 <div id="siteContent" style="display:none;">
   
 <div class="top">
-
-  <button class="side-btn left" onclick="openPreview('letter1.pdf')">
-    💌
-  </button>
+  
+  <a href="letter1.pdf" target="_blank" class="side-btn left">
+    🌹
+  </a>
 
   <h1>Khloe ❤️ Rylen</h1>
 
-  <button class="side-btn right" onclick="openPreview('letter2.pdf')">
-    🌹
-  </button>
+  <a href="letter2.pdf" target="_blank" class="side-btn right">
+    💌
+  </a>
 
   <p>Instagram Memories</p>
 
-</div>
-
-<div id="pdfModal" class="modal">
-  <div class="modal-content">
-    <button class="close-btn" onclick="closePreview()">✕</button>
-    <iframe id="pdfFrame" src=""></iframe>
-  </div>
 </div>
   <div class="search-box">
   <input id="searchInput" type="text" placeholder="Search messages...">
@@ -151,17 +144,6 @@ function cleanText(text = "") {
     });
 
   });
-  <script>
-function openPreview(file) {
-  document.getElementById("pdfFrame").src = file;
-  document.getElementById("pdfModal").style.display = "flex";
-}
-
-function closePreview() {
-  document.getElementById("pdfModal").style.display = "none";
-  document.getElementById("pdfFrame").src = "";
-}
-</script>
 </script>
 </div>
 
